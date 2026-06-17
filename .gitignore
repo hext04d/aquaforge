@@ -1,0 +1,6 @@
+backend/venv/
+backend/downloads/
+backend/ffmpeg_bin/
+backend/ffmpeg.tar.xz
+venv/
+node_modules/
