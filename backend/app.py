@@ -7,7 +7,7 @@ from flask_cors import CORS
 from youtube_service import YouTubeService
 
 app = Flask(__name__)
-CORS(app, expose_headers=["Content-Disposition"])
+CORS(app, expose_headers=["Content-Disposition"], origins="*")
 
 DOWNLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'downloads')
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)

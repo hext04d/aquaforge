@@ -42,7 +42,7 @@ export default function Home() {
     // API Health Check
     const checkApi = async () => {
       try {
-        const baseUrl = typeof window !== 'undefined' && window.location.port === '3000' ? 'http://localhost:5000' : '';
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' && window.location.port === '3000' ? 'http://localhost:5000' : '');
         const res = await fetch(`${baseUrl}/api/health`);
         if (res.ok) setApiStatus("ONLINE");
         else setApiStatus("OFFLINE");
@@ -141,9 +141,8 @@ export default function Home() {
 
     try {
       // In Docker with Nginx, backend is at /api or we can hardcode for local dev if needed
-      // since the next dev server is on 3000, but in prod nginx proxies 8080 to both.
-      // We'll use relative URL which works under Nginx, or absolute for local.
-      const baseUrl = typeof window !== 'undefined' && window.location.port === '3000' ? 'http://localhost:5000' : '';
+      // We'll use process.env.NEXT_PUBLIC_API_URL if set, otherwise relative URL which works under Nginx, or absolute for local.
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' && window.location.port === '3000' ? 'http://localhost:5000' : '');
 
       logToConsole('EXTRACTING METADATA PROTOCOLS...', 'normal');
 
