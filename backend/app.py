@@ -5,12 +5,15 @@ from io import BytesIO
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from youtube_service import YouTubeService
+from visits import visits_bp
 
 app = Flask(__name__)
 CORS(app, expose_headers=["Content-Disposition"], origins="*")
 
 DOWNLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'downloads')
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+
+app.register_blueprint(visits_bp)
 
 youtube_service = YouTubeService()
 

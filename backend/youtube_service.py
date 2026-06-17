@@ -13,7 +13,6 @@ class YouTubeService:
         Initializes the YouTubeService and sets up the FFMPEG path if available.
         """
         self.ffmpeg_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ffmpeg_bin')
-        self.base_extractor_args = {'youtube': {'player_client': ['android', 'tv', 'ios', 'web']}}
 
     def get_video_info(self, url: str) -> Dict[str, Any]:
         """
@@ -30,7 +29,7 @@ class YouTubeService:
         ydl_opts = {
             'quiet': True,
             'extract_flat': True,
-            'extractor_args': self.base_extractor_args
+            'remote_components': ['ejs:github']
         }
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -71,23 +70,36 @@ class YouTubeService:
             'outtmpl': output_path,
             'quiet': True,
             'noplaylist': True,
-            'extractor_args': self.base_extractor_args
+            'remote_components': ['ejs:github']
         }
 
         if format_type == 'mp3':
             # Audio (MP3) extraction
-            ydl_opts['format'] = 'bestaudio/best' if quality == 'best' else 'worstaudio/worst'
+            ydl_opts['format'] = 'bestaudio/best'
+            bitrate = '192'
+            if quality in ['320', '256', '192', '128', '96', '64']:
+                bitrate = quality
+            elif quality == 'best':
+                bitrate = '320'
+            elif quality == 'worst':
+                bitrate = '64'
+                
             ydl_opts['postprocessors'] = [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
-                'preferredquality': '192' if quality == 'best' else '96',
+                'preferredquality': bitrate,
             }]
         else:
             # Video (MP4) extraction
-            if quality == 'best':
-                ydl_opts['format'] = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
+            if quality in ['2160', '1440', '1080', '720', '480', '360', '240', '144']:
+                h = quality
+                ydl_opts['format'] = f'bestvideo[height<={h}]+bestaudio/best[height<={h}]/best'
+            elif quality == 'best':
+                ydl_opts['format'] = 'bestvideo+bestaudio/best'
+            elif quality == 'worst':
+                ydl_opts['format'] = 'worstvideo+worstaudio/worst'
             else:
-                ydl_opts['format'] = 'worstvideo[ext=mp4]+worstaudio[ext=m4a]/worst[ext=mp4]/worst'
+                ydl_opts['format'] = 'bestvideo+bestaudio/best'
             
             ydl_opts['merge_output_format'] = 'mp4'
 
